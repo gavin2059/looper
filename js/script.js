@@ -16,15 +16,14 @@ var myRecorder = {
         if(myRecorder.objects.context == null || myRecorder.objects.context == undefined) {
             myRecorder.objects.context = new (window.AudioContext || window.webkitAudioContext);
         }
-        myRecorder.objects.context.resume();
     },
     reset: function () {
         document.querySelector('.recordings').innerHTML = "";
-        myRecorder.objects = {
-        context: null,
-        stream: null,
-        recorder: null
-        };
+        //myRecorder.objects = {
+        //context: null,
+        //stream: null,
+        //recorder: null
+        //};
         layer = -1;
         layerrefs[layer] = null;
         baseLength = 0;
@@ -77,7 +76,7 @@ var myRecorder = {
                       //.append(downloadObject);
                 }
                 else{
-                    holderObject = $('<div class="row" ></div>')
+                    holderObject = $('<div class="row"></div>')
                         .append(audioObject)
                 }
                 // Append to the list
@@ -89,7 +88,6 @@ var myRecorder = {
 };
 
 function setLoop() {
-    myRecorder.objects.context.resume();
     layerrefs[layer] = document.getElementById(layer);
     const play = layerrefs[layer].play.bind(layerrefs[layer]);
     var layerLocal=  layer;
@@ -111,7 +109,7 @@ function setLoop() {
                 layerrefs[layerLocal].currentTime = 0;
             }, baseLength + 300);
         }, 
-        baseLength - layerrefs[layerLocal].duration * 1000 - 500);
+        baseLength - layerrefs[layerLocal].duration * 1000-200);
      }
 }
 
