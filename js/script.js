@@ -109,7 +109,7 @@ function setLoop() {
                 layerrefs[layerLocal].currentTime = 0;
             }, baseLength + 300);
         }, 
-        baseLength - layerrefs[layerLocal].duration * 1000-200);
+        baseLength - layerrefs[layerLocal].duration * 1000);
      }
 }
 
