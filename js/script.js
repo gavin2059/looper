@@ -4,8 +4,8 @@ var baseLength = 0;
 var layer = -1;
 var loops = [];
 var layerrefs = [];
-var d = new Date();
-var play;
+var filter;
+var src;
 var myRecorder = {
     objects: {
         context: null,
@@ -15,15 +15,13 @@ var myRecorder = {
     init: function () {
         if(myRecorder.objects.context == null || myRecorder.objects.context == undefined) {
             myRecorder.objects.context = new (window.AudioContext || window.webkitAudioContext);
+            filter = myRecorder.objects.context.createBiquadFilter();
+
+
         }
     },
     reset: function () {
         document.querySelector('.recordings').innerHTML = "";
-        //myRecorder.objects = {
-        //context: null,
-        //stream: null,
-        //recorder: null
-        //};
         layer = -1;
         layerrefs[layer] = null;
         baseLength = 0;
@@ -33,13 +31,21 @@ var myRecorder = {
         loops = [];
     },
     start: function () {
-        var options = {audio: true, video: false};
-        navigator.mediaDevices.getUserMedia(options).then(function (stream) {
+        var constraints = {
+          audio: {
+            optional: [
+              {autoGainControl: true},
+              {echoCancellation: false},
+              {noiseSuppression: true},
+              {highpassFilter: false}
+            ]
+          }
+        };
+        navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
             myRecorder.objects.stream = stream;
-            myRecorder.objects.recorder = new Recorder(
-                    myRecorder.objects.context.createMediaStreamSource(stream),
-                    {numChannels: 1}
-            );
+            src = myRecorder.objects.context.createMediaStreamSource(stream);
+            src.connect(filter);
+            myRecorder.objects.recorder = new Recorder(src,{numChannels: 1});
             myRecorder.objects.recorder.record();
         }).catch(function (err) {});
     },
@@ -95,7 +101,6 @@ function setLoop() {
         baseLength = layerrefs[layer].duration * 1000;
         play();
         loops[layerLocal] = setInterval(()=>{
-            console.log("1");
             play();
             layerrefs[layerLocal].currentTime = 0;
         }, baseLength + 300);
@@ -104,7 +109,6 @@ function setLoop() {
         setTimeout(()=>{
             play();
             loops[layerLocal] = setInterval(()=>{
-                console.log("2");
                 play();
                 layerrefs[layerLocal].currentTime = 0;
             }, baseLength + 300);
